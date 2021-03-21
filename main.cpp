@@ -29,57 +29,61 @@ int main(int argc, char* argv[]) {
     } else if (0 == strcmp(argv[1], "--compare")) {
         
         GrB_init(GrB_BLOCKING);
-        for (auto filename: {"data/500_1.txt", "data/500_10.txt", "data/500_50.txt", "data/2000_100.txt"}) {
+        for (const string& i: {"500", "1000", "2000", "5000", "10000"}) {
 
-            ifstream input(filename);
+            for (const uint64_t fillfactor: {50, 25, 5, 1}) {
 
-            GrB_Index size, starts_count, edges_count;
-            input >> size >> starts_count >> edges_count;
+                ifstream input("data/" + i + ".txt");
+
+                GrB_Index size, starts_count, edges_count;
+                input >> size >> starts_count >> edges_count;
 
 
-            Graph g1(size);
+                Graph g1(size);
 
-            GrB_Index vertex;
-            set<GrB_Index> starts;
-            for (GrB_Index i = 0; i < starts_count; i++) {
-                
-                input >> vertex;
-                starts.insert(vertex);
+                GrB_Index vertex;
+                set<GrB_Index> starts;
+                for (GrB_Index i = 0; i < starts_count; i++) {
+                    
+                        input >> vertex;
+                        starts.insert(vertex);
+                }
+
+                GrB_Matrix g;
+                GrB_Matrix_new(&g, GrB_BOOL, size, size);
+
+                GrB_Index from, to; 
+                for (GrB_Index i = 0; i < edges_count; i++) {
+                    
+                    input >> from >> to;
+                    
+                    if (i % fillfactor == 0) {
+
+                        GrB_Matrix_setElement_BOOL(g, true, from, to);
+                        g1.add_edge(from, to);
+                    }
+                }
+
+                input.close();
+
+                GrB_Vector s;
+            
+                auto t_1 = chrono::high_resolution_clock::now();
+                top_sort(s, g, starts);
+                auto t_2 = chrono::high_resolution_clock::now();
+
+            
+                GrB_Vector_free(&s);
+                GrB_finalize();
+
+                auto t_3 = high_resolution_clock::now();
+                g1.topological_sort();
+                auto t_4 = high_resolution_clock::now();
+
+                auto d_1 = duration_cast<microseconds>(t_2 - t_1);
+                auto d_2 = duration_cast<microseconds>(t_4 - t_3); 
+                cout << i << ' ' << static_cast<double>(25) / static_cast<double>(fillfactor) << ' ' << d_1.count() << ' ' << d_2.count() << endl;
             }
-
-            GrB_Matrix g;
-            GrB_Matrix_new(&g, GrB_BOOL, size, size);
-
-            GrB_Index from, to; 
-            for (GrB_Index i = 0; i < edges_count; i++) {
-                
-                input >> from >> to;
-                GrB_Matrix_setElement_BOOL(g, true, from, to);
-                g1.add_edge(from, to);
-            }
-
-            input.close();
-
-            GrB_Vector s;
-            // time for matrix
-
-            auto t_1 = chrono::high_resolution_clock::now();
-            top_sort(s, g, starts);
-            auto t_2 = chrono::high_resolution_clock::now();
-
-            // cout << endl;
-
-            GrB_Vector_free(&s);
-            GrB_finalize();
-
-            // time for sequential
-            auto t_3 = high_resolution_clock::now();
-            g1.topological_sort();
-            auto t_4 = high_resolution_clock::now();
-
-            auto d_1 = duration_cast<microseconds>(t_2 - t_1);
-            auto d_2 = duration_cast<microseconds>(t_4 - t_3); 
-            cout << d_1.count() << ' ' << d_2.count() << endl;
         }
 
     } else {
