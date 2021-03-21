@@ -12,7 +12,7 @@ make
 ## Run
 You can ran either tests data or your example with next commands appropriately:
 ```
-./graphBlas test
+./graphBlas --test
 ./graphBlas <input file>
 ```
 

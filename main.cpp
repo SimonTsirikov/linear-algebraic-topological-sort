@@ -13,15 +13,18 @@ using namespace std;
 
 
 int main(int argc, char* argv[]) {
+    
     if (argc < 2) {
+        
         cout << "No arguments passed to program." << endl;
-    } else if (argv[1] == "test") {
-        // TODO tests
-        // GrB_Matrix_setElement_BOOL(g, true, 3, 2);
-        // GrB_Matrix_setElement_BOOL(g, true, 1, 2);
-        // GrB_Matrix_setElement_BOOL(g, true, 0, 2);  
-        // GrB_Matrix_setElement_BOOL(g, true, 3, 2);
+    } else if (0 == strcmp(argv[1], "--test")) {
+
+        if (0 == run_tests()) {
+            
+            cout << "All tests are passed." << endl;
+        }
     } else {
+        
         GrB_init(GrB_BLOCKING);
         
         ifstream input(argv[1]);
@@ -32,6 +35,7 @@ int main(int argc, char* argv[]) {
         GrB_Index vertex;
         set<GrB_Index> starts;
         for (GrB_Index i = 0; i < starts_count; i++) {
+            
             input >> vertex;
             starts.insert(vertex);
         }
@@ -41,26 +45,27 @@ int main(int argc, char* argv[]) {
 
         GrB_Index from, to; 
         for (GrB_Index i = 0; i < edges_count; i++) {
+            
             input >> from >> to;
             GrB_Matrix_setElement_BOOL(g, true, from, to);
         }
 
         input.close();
 
-        FILE* f = fopen("out.txt", "w");
-        GxB_Matrix_fprint(g, "g", GxB_COMPLETE, f);
-
         GrB_Vector s;
-        GrB_Vector_new(&s,  GrB_UINT64, size);
-        for (GrB_Index i = 0; i < size; i++) {
-            GrB_Vector_setElement_UINT64(s, i, i);
-        }
         
-        GxB_Vector_fprint(s, "s", GxB_COMPLETE, f);
         top_sort(s, g, starts);
-        GxB_Vector_fprint(s, "s", GxB_COMPLETE, f);
         
-        fclose(f);
+        cout << "Ordered indexes of vertexes:" << endl;
+        GrB_Index buf;
+        for (GrB_Index i = 0; i < size; i++) {
+            
+            GrB_Vector_extractElement_UINT64(&buf, s, i);
+            cout << buf << ' ';
+        }
+        cout << endl;
+
+        GrB_Vector_free(&s);
         GrB_finalize();
     }
     
