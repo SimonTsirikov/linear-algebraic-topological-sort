@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cassert>
-#include "implementation.h"
+#include "matrix_implementation.h"
 
 
 void simple_straight() {
@@ -244,6 +244,41 @@ void fork_start_and_end() {
 
     GrB_Vector_extractElement_UINT64(&buf, s, 3);
     assert(buf == 0);
+
+    GrB_Matrix_free(&g);
+    GrB_Vector_free(&s);
+}
+
+void fork_triangle() {
+
+    GrB_Matrix g;
+    GrB_Matrix_new(&g, GrB_BOOL, 3, 3);
+
+/*
+    0
+   /|
+  2 |
+   \|
+    1
+*/
+
+    GrB_Matrix_setElement_BOOL(g, true, 0, 2); 
+    GrB_Matrix_setElement_BOOL(g, true, 2, 1); 
+    GrB_Matrix_setElement_BOOL(g, true, 0, 1); 
+    
+    GrB_Vector s;
+    top_sort(s, g, {0});
+
+    GrB_Index buf;
+
+    GrB_Vector_extractElement_UINT64(&buf, s, 0);
+    assert(buf == 0);
+
+    GrB_Vector_extractElement_UINT64(&buf, s, 1);
+    assert(buf == 2);
+
+    GrB_Vector_extractElement_UINT64(&buf, s, 2);
+    assert(buf == 1);
 
     GrB_Matrix_free(&g);
     GrB_Vector_free(&s);

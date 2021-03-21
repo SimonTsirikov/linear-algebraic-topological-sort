@@ -1,15 +1,18 @@
 #include <iostream>
 #include <fstream>
 #include <set>
+#include <chrono>
 
 extern "C" {
     #include <GraphBLAS.h>
 }
 
-#include "implementation.h"
+#include "matrix_implementation.h"
+#include "sequential_implementation.h"
 #include "tests.h"
 
 using namespace std;
+using namespace std::chrono; 
 
 
 int main(int argc, char* argv[]) {
@@ -23,6 +26,62 @@ int main(int argc, char* argv[]) {
             
             cout << "All tests are passed." << endl;
         }
+    } else if (0 == strcmp(argv[1], "--compare")) {
+        
+        GrB_init(GrB_BLOCKING);
+        for (auto filename: {"data/500_1.txt", "data/500_10.txt", "data/500_50.txt", "data/2000_100.txt"}) {
+
+            ifstream input(filename);
+
+            GrB_Index size, starts_count, edges_count;
+            input >> size >> starts_count >> edges_count;
+
+
+            Graph g1(size);
+
+            GrB_Index vertex;
+            set<GrB_Index> starts;
+            for (GrB_Index i = 0; i < starts_count; i++) {
+                
+                input >> vertex;
+                starts.insert(vertex);
+            }
+
+            GrB_Matrix g;
+            GrB_Matrix_new(&g, GrB_BOOL, size, size);
+
+            GrB_Index from, to; 
+            for (GrB_Index i = 0; i < edges_count; i++) {
+                
+                input >> from >> to;
+                GrB_Matrix_setElement_BOOL(g, true, from, to);
+                g1.add_edge(from, to);
+            }
+
+            input.close();
+
+            GrB_Vector s;
+            // time for matrix
+
+            auto t_1 = chrono::high_resolution_clock::now();
+            top_sort(s, g, starts);
+            auto t_2 = chrono::high_resolution_clock::now();
+
+            // cout << endl;
+
+            GrB_Vector_free(&s);
+            GrB_finalize();
+
+            // time for sequential
+            auto t_3 = high_resolution_clock::now();
+            g1.topological_sort();
+            auto t_4 = high_resolution_clock::now();
+
+            auto d_1 = duration_cast<microseconds>(t_2 - t_1);
+            auto d_2 = duration_cast<microseconds>(t_4 - t_3); 
+            cout << d_1.count() << ' ' << d_2.count() << endl;
+        }
+
     } else {
         
         GrB_init(GrB_BLOCKING);
