@@ -37,4 +37,4 @@
 #
 build/*
 !build/.gitkeep
-~build/data/generator.py
+!build/data/generator.py

@@ -13,9 +13,11 @@ make
 You can ran either tests data or your example with next commands appropriately:
 ```
 ./graphBlas --test
+./graphBlas --compare
 ./graphBlas <input file>
 ```
 
+(To use `--compare`, generate test data with `build/data/generator.py`.)
 Consider input file in format of `.txt` with data like this:
 ```
 <number of vertexes in graph> <number of start vertexes> <number of edges in graph>
