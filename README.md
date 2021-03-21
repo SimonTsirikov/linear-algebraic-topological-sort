@@ -2,7 +2,7 @@
 Implementation of the algorithm from section 5 of [Linear Algebraic Depth-First Search](https://dl.acm.org/doi/10.1145/3315454.3329962) (ARRAY workshop @ PLDI 2019) by Daniele G. Spampinato et al.
 
 ## Build
-Before build installation of [GraphBlas](https://graphblas.github.io/) and CMake is required.
+Before build installation of [GraphBlas](https://graphblas.github.io/) and CMake (with gcc version `10.2.0-13ubuntu1`) is required.
 ```
 cd build
 cmake ..
