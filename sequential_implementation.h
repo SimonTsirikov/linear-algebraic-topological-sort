@@ -51,25 +51,3 @@ class Graph {
         uint64_t no_of_vertices;
         list<uint64_t>* l1;  
 }; 
-  
-  
-// int main() 
-// { 
-//     Graph p(4);  // 4: no of vertices
-//     p.add_edge(0, 1); 
-//     p.add_edge(2, 1); 
-//     // p.add_edge(1, 2); 
-//     p.add_edge(1, 3); 
-//     p.add_edge(2, 3); 
-//     /* This Graph is shown in above figure */ 
-  
-//     cout <<"\nTopological order of the vertices of the Graph: "; 
-//     auto s = p.topological_sort(); 
-//     while (!s.empty()) {
-//         cout << s.top() << ' ';
-//         s.pop();
-//     }
-//     cout << endl;
-
-//     return 0; 
-// }
