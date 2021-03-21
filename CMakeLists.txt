@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.16)
+project(graphBlas)
+find_library(PATH_TO_GRAPHBLAS graphblas)
+add_compile_options(-fPIC)
+add_executable(graphBlas main.cpp)
+target_link_libraries (graphBlas ${PATH_TO_GRAPHBLAS})
