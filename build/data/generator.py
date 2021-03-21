@@ -1,29 +1,29 @@
 from random import randint
 
 for i in [500, 1000, 2000, 5000, 10000]:
-    edges_count = 0
-    with open(f'{i}.txt', 'w') as f:
-        starts = set()
+    for j in [5, 10, 50, 100]:
+        edges_count = i // j
         
-        for k in range(10):
-            starts.add(randint(0, i - 1))
+        with open(f'{i}_{j}.txt', 'w') as f:
+            starts = list()
+            
+            while (len(starts) != 10):
+                buf = randint(0, i - 1)
+                if (buf not in starts):
+                    starts.append(buf)
+            
+            f.write(f'{i} 10 {edges_count}\n')
+            for k in starts:
+                f.write(f'{k} ')
+            
+            f.write('\n')
+
+            edges = list()
+            while (len(edges) != edges_count):
+                buf_1 = randint(0, len(starts) - 1)
+                buf_2 = randint(starts[buf_1], i - 1)
+                if ((buf_2 not in starts) and ([starts[buf_1], buf_2] not in edges)):
+                    f.write(f'{starts[buf_1]} {buf_2}\n')
+                    edges.append([starts[buf_1], buf_2])
+                    starts.append(buf_2)
         
-        f.write('\n\n')
-        for k in starts:
-            f.write(f'{k} ')
-        
-        f.write('\n')
-
-        for k in range(i):
-            for l in range(k, i):
-                if ((k not in starts) and (randint(0, 1) == 1)):
-                    f.write(f'{k} {l}\n')
-                    edges_count += 1
-
-    with open(f'{i}.txt', 'r') as f:
-        lines = f.readlines()
-
-    lines[0] = f'{i} {edges_count}'
-
-    with open(f'{i}.txt', 'w') as f:
-        f.writelines(lines)

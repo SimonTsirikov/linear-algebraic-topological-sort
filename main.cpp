@@ -31,9 +31,9 @@ int main(int argc, char* argv[]) {
         GrB_init(GrB_BLOCKING);
         for (const string& i: {"500", "1000", "2000", "5000", "10000"}) {
 
-            for (const uint64_t fillfactor: {50, 25, 5, 1}) {
+            for (const string& j: {"100", "50", "10", "5"}) {
 
-                ifstream input("data/" + i + ".txt");
+                ifstream input("data/" + i + "_" + j + ".txt");
 
                 GrB_Index size, starts_count, edges_count;
                 input >> size >> starts_count >> edges_count;
@@ -57,11 +57,8 @@ int main(int argc, char* argv[]) {
                     
                     input >> from >> to;
                     
-                    if (i % fillfactor == 0) {
-
-                        GrB_Matrix_setElement_BOOL(g, true, from, to);
-                        g1.add_edge(from, to);
-                    }
+                    GrB_Matrix_setElement_BOOL(g, true, from, to);
+                    g1.add_edge(from, to);
                 }
 
                 input.close();
@@ -82,7 +79,7 @@ int main(int argc, char* argv[]) {
 
                 auto d_1 = duration_cast<microseconds>(t_2 - t_1);
                 auto d_2 = duration_cast<microseconds>(t_4 - t_3); 
-                cout << i << ' ' << static_cast<double>(25) / static_cast<double>(fillfactor) << ' ' << d_1.count() << ' ' << d_2.count() << endl;
+                cout << i << ' ' << j << ' ' << d_1.count() << ' ' << d_2.count() << endl;
             }
         }
 
