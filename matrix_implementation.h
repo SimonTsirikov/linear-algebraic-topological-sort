@@ -32,14 +32,14 @@ GrB_Index build_permute
     GrB_Index moved_down = 0;
 
     bool buf;
-    GrB_Index buf_s;
+    uint16_t buf_s;
 
     for (GrB_Index i = tau; i < size; i++) {
         
         GrB_Vector_extractElement_BOOL(&buf, e, i);
         if (buf) {
             
-            GrB_Vector_extractElement_UINT64(&buf_s, s, i);
+            GrB_Vector_extractElement_UINT16(&buf_s, s, i);
             GrB_Matrix_setElement_BOOL(P, true, i, tau + moved_up.size());
             moved_up.insert(buf_s);
     
@@ -49,7 +49,7 @@ GrB_Index build_permute
     
     for (GrB_Index i = tau; i < size; i++) {
         
-        GrB_Vector_extractElement_UINT64(&buf_s, s, i);
+        GrB_Vector_extractElement_UINT16(&buf_s, s, i);
         if (moved_up.count(buf_s) == 0) {
             
             GrB_Matrix_setElement_BOOL(P, true, i, tau + moved_up.size() + moved_down);
@@ -71,10 +71,10 @@ GrB_Info top_sort
     GrB_Index size;
     GrB_Matrix_ncols(&size, A);
 
-    GrB_Vector_new(&s,  GrB_UINT64, size);
-    for (GrB_Index i = 0; i < size; i++) {
+    GrB_Vector_new(&s,  GrB_UINT16, size);
+    for (uint16_t i = 0; i < size; i++) {
         
-        GrB_Vector_setElement_UINT64(s, i, i);
+        GrB_Vector_setElement_UINT16(s, i, i);
     }
 
     GrB_Index tau = 0;
@@ -89,8 +89,8 @@ GrB_Info top_sort
     GrB_Matrix_new(&P, GrB_BOOL, size, size);
     GrB_Matrix_new(&P_1, GrB_BOOL, size, size);
     GrB_Matrix_new(&A_1, GrB_BOOL, size, size);
-    GrB_Vector_new(&n, GrB_UINT64, size);
-    GrB_Vector_new(&e, GrB_UINT64, size);
+    GrB_Vector_new(&n, GrB_UINT16, size);
+    GrB_Vector_new(&e, GrB_BOOL, size); // GrB_BOOL
 
     for (GrB_Index i: visited) {
         
@@ -101,10 +101,10 @@ GrB_Info top_sort
     
     GrB_transpose(P_1, NULL, NULL, P, GrB_DESC_R);
 
-    GrB_mxm(A, NULL, NULL, GxB_ANY_PAIR_BOOL, P_1, A, GrB_DESC_R);
-    GrB_mxm(A, NULL, NULL, GxB_ANY_PAIR_BOOL, A, P, GrB_DESC_R);
+    GrB_mxm(A, NULL, NULL, GxB_LOR_LAND_BOOL, P_1, A, GrB_DESC_R); // GxB_LOR_LAND_BOOL
+    GrB_mxm(A, NULL, NULL, GxB_LOR_LAND_BOOL, A, P, GrB_DESC_R);
 
-    GrB_mxv(s, NULL, NULL, GrB_MAX_SECOND_SEMIRING_UINT64, P_1, s, GrB_DESC_R);
+    GrB_mxv(s, NULL, NULL, GrB_PLUS_TIMES_SEMIRING_UINT16, P_1, s, GrB_DESC_R);
 
     GrB_Vector_clear(e);
     for (GrB_Index i = 0; i < size; i++) {
@@ -114,7 +114,10 @@ GrB_Info top_sort
 
     beta += nu;
 
-    while (tau < size) {
+    GrB_Index edges_count;
+    GrB_Matrix_nvals(&edges_count, A);
+
+    while (tau < size && tau < edges_count) {
         
         GrB_Vector_setElement_BOOL(e, true, tau);
 
@@ -131,10 +134,10 @@ GrB_Info top_sort
         
         GrB_transpose(P_1, NULL, NULL, P, GrB_DESC_R);        
         
-        GrB_mxm(A, NULL, NULL, GxB_ANY_PAIR_BOOL, P_1, A, GrB_DESC_R);
-        GrB_mxm(A, NULL, NULL, GxB_ANY_PAIR_BOOL, A, P, GrB_DESC_R);
+        GrB_mxm(A, NULL, NULL, GxB_LOR_LAND_BOOL, P_1, A, GrB_DESC_R);
+        GrB_mxm(A, NULL, NULL, GxB_LOR_LAND_BOOL, A, P, GrB_DESC_R);
         
-        GrB_mxv(s, NULL, NULL, GrB_MAX_SECOND_SEMIRING_UINT64, P_1, s, GrB_DESC_R);
+        GrB_mxv(s, NULL, NULL, GrB_PLUS_TIMES_SEMIRING_UINT16, P_1, s, GrB_DESC_R);
         
         beta += nu;
     }

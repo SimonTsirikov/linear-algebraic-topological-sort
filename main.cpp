@@ -26,12 +26,12 @@ int main(int argc, char* argv[]) {
             
             cout << "All tests are passed." << endl;
         }
-    } else if (0 == strcmp(argv[1], "--compare")) {
+    } else if (0 == strcmp(argv[1], "--compare")) { // гипер-разреженные матрицы
         
         GrB_init(GrB_BLOCKING);
         for (const string& i: {"500", "1000", "2000", "5000", "10000"}) {
 
-            for (const string& j: {"100", "50", "10", "5"}) {
+            for (const string& j: {"100", "50", "10", "5", "1", "0.5"}) {
 
                 ifstream input("data/" + i + "_" + j + ".txt");
 
