@@ -90,7 +90,7 @@ GrB_Info top_sort
     GrB_Matrix_new(&P_1, GrB_BOOL, size, size);
     GrB_Matrix_new(&A_1, GrB_BOOL, size, size);
     GrB_Vector_new(&n, GrB_UINT16, size);
-    GrB_Vector_new(&e, GrB_BOOL, size); // GrB_BOOL
+    GrB_Vector_new(&e, GrB_BOOL, size);
 
     for (GrB_Index i: visited) {
         
@@ -101,7 +101,7 @@ GrB_Info top_sort
     
     GrB_transpose(P_1, NULL, NULL, P, GrB_DESC_R);
 
-    GrB_mxm(A, NULL, NULL, GxB_LOR_LAND_BOOL, P_1, A, GrB_DESC_R); // GxB_LOR_LAND_BOOL
+    GrB_mxm(A, NULL, NULL, GxB_LOR_LAND_BOOL, P_1, A, GrB_DESC_R);
     GrB_mxm(A, NULL, NULL, GxB_LOR_LAND_BOOL, A, P, GrB_DESC_R);
 
     GrB_mxv(s, NULL, NULL, GrB_PLUS_TIMES_SEMIRING_UINT16, P_1, s, GrB_DESC_R);

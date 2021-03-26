@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
             
             cout << "All tests are passed." << endl;
         }
-    } else if (0 == strcmp(argv[1], "--compare")) { // гипер-разреженные матрицы
+    } else if (0 == strcmp(argv[1], "--compare")) {
         
         GrB_init(GrB_BLOCKING);
         for (const string& i: {"500", "1000", "2000", "5000", "10000"}) {
