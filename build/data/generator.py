@@ -6,11 +6,6 @@ for i in [500, 1000, 2000, 5000, 10000]:
         
         with open(f'{i}_{j}.txt', 'w') as f:
             starts = list()
-            
-            # while (len(starts) != 10):
-            #     buf = randint(0, i - 1)
-            #     if (buf not in starts):
-            #         starts.append(buf)
 
             for k in range(0, i, i // 10):
                 starts.append(k)
